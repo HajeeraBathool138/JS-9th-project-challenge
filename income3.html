@@ -1,0 +1,1168 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income/Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="icon" href="Screenshot (313).png">
+    <style>
+        :root {
+            --clr-primary: #7380ec;
+            --clr-danger: #ff7782;
+            --clr-success: #41f1b6;
+            --clr-white: #fff;
+            --clr-info-dark: #7d8da1;
+            --clr-info-light: #dce1eb;
+            --clr-dark: #363949;
+            --clr-warnig: #ff4edc;
+            --clr-light: rgba(132, 139, 200, 0.18);
+            --clr-primary-variant: #111e88;
+            --clr-dark-variant: #677483;
+            --clr-color-background: #f6f6f9;
+
+            --card-border-radius: 2rem;
+            --border-radius-1: 0.4rem;
+            --border-radius-2: 0.8rem;
+            --border-radius-3: 1.2rem;
+
+            --card-padding: 1.8rem;
+            --padding-1: 1.2rem;
+            --box-shadow: 0 2rem 3rem var(--clr-light);
+        }
+
+        .dark-theme-variables {
+            --clr-color-background: #181a1e;
+            --clr-white: #202528;
+            --clr-light: rgba(0, 0, 0, 0.4);
+            --clr-dark: #edeffd;
+            --clr-dark-variant: #677483;
+            --box-shadow: 0 2rem 3rem var(--clr-light)
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            border: 0;
+            text-decoration: none;
+            list-style: none;
+            appearance: none;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            font-size: .7rem;
+            user-select: none;
+            overflow-x: hidden;
+            background: var(--clr-color-background);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            display: grid;
+            width: 96%;
+            gap: 1.8rem;
+            grid-template-columns: 14rem auto 16rem;
+            margin: 0 auto;
+        }
+
+        a {
+            color: var(--clr-dark);
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2.8rem;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+        }
+
+        h4 {
+            font-weight: 0.8rem;
+        }
+
+        h5 {
+            font-size: 0.77rem;
+        }
+
+        small {
+            font-size: 0.75rem;
+        }
+
+        .profile-photo img {
+            width: 2.8rem;
+            height: 2.8rem;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+
+        .text-muted {
+            color: var(--clr-info-dark);
+        }
+
+        p {
+            color: var(--clr-dark-variant);
+        }
+
+        b {
+            color: black !important;
+        }
+
+        .primary {
+            color: var(--clr-primary);
+        }
+
+        .success {
+            color: var(--clr-success);
+        }
+
+        .danger {
+            color: var(--clr-danger);
+        }
+
+        .warning {
+            color: var(--clr-warnig);
+        }
+
+        aside {
+            height: 100vh;
+        }
+
+        aside .top {
+            background: var(--clr-white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.4rem;
+        }
+
+        aside .logo {
+            display: flex;
+            gap: 1rem;
+        }
+
+        aside .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        aside .top div.close span {
+            display: none;
+        }
+
+        aside .sidebar {
+            background: var(--clr-white);
+            display: flex;
+            flex-direction: column;
+            height: 86vh;
+            position: relative;
+            top: 1rem;
+        }
+
+        aside h3 {
+            font-weight: 500;
+        }
+
+        aside .sidebar a {
+            display: flex;
+            color: var(--clr-info-dark);
+            margin-left: 2rem;
+            gap: 1rem;
+            align-items: center;
+            height: 3.3rem;
+            transition: all .1s ease;
+        }
+
+        aside .sidebar a span {
+            font-size: 1.6rem;
+            transition: all .3s ease-in-out;
+        }
+
+        aside .sidebar a:last-child {
+            position: absolute;
+            bottom: 1rem;
+            width: 100%;
+        }
+
+        aside .sidebar a.active {
+            background-color: var(--clr-light);
+            color: var(--clr-primary);
+            margin-left: 0;
+            border-left: 5px solid var(--clr-primary);
+            margin-left: calc(1rem - 3px);
+        }
+
+        aside .sidebar a:hover span {
+            margin-left: 1rem;
+        }
+
+        aside .sidebar a span.msg_count {
+            background-color: var(--clr-danger);
+            color: var(--clr-white);
+            padding: 2px 5px;
+            font-size: 11px;
+            border-radius: var(--border-radius-1);
+        }
+
+        .container {
+            display: grid;
+            width: 96%;
+            gap: 1.8rem;
+            grid-template-columns: 14rem 3fr 1fr;
+            margin: 0 auto;
+            /* align-items: center; */
+        }
+
+        .right {
+            margin-top: 1.4rem;
+        }
+
+        .right h2 {
+            color: var(--clr-dark);
+        }
+
+        .right .top {
+            display: flex;
+            justify-content: end;
+            gap: 2rem;
+            margin-right: 1rem;
+        }
+
+        .right .top button {
+            display: none;
+        }
+
+        .right .theme-toggler {
+            background: var(--clr-white);
+            display: flex;
+            justify-content: space-between;
+            height: 1.6rem;
+            width: 4.2rem;
+            cursor: pointer;
+            border-radius: var(--border-radius-1);
+        }
+
+        .right .theme-toggler span {
+            font-size: 1.2rem;
+            width: 50%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .right .theme-toggler span.active {
+            background: var(--clr-primary);
+            color: #fff;
+        }
+
+
+        .right .top .profile {
+            display: flex;
+            gap: 2rem;
+            text-align: right;
+        }
+
+        .right .info h3 {
+            color: var(--clr-dark);
+        }
+
+        .right .item h3 {
+            color: var(--clr-dark);
+        }
+
+        /* recent update */
+
+        .right .recent_updates {
+            margin-top: 1rem;
+            margin-left: -20px;
+        }
+
+        .right .recent_updates .updates {
+            background-color: var(--clr-white);
+            padding: var(--card-padding);
+            border-radius: var(--card-border-radius);
+            box-shadow: var(--box-shadow);
+            transition: all .3s ease;
+        }
+
+        .right .recent_updates .updates:hover {
+            box-shadow: none;
+        }
+
+        .right .recent_updates .update {
+            display: grid;
+            grid-template-columns: 2.6rem auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+
+        /* .right .recent_updates .update p {}
+
+        see analytics */
+
+        .right .sales-analytics {
+            margin-top: 2rem;
+        }
+
+        .right .sales-analytics h2 {
+            margin-bottom: 0.8rem;
+        }
+
+        .right .sales-analytics .item {
+            background-color: var(--clr-white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin: 10px 0;
+            width: 100%;
+            margin-bottom: 0.8rem;
+            padding: 1.4rem var(--card-padding);
+            border-radius: var(--border-radius-3);
+            box-shadow: var(--box-shadow);
+        }
+
+        .right .sales-analytics .item:hover {
+            box-shadow: none;
+        }
+
+        .right .sales-analytics .item .icon {
+            padding: 0.6rem;
+            color: var(--clr-white);
+            border-radius: 50%;
+            height: 50px;
+            width: 50px;
+            line-height: 50px;
+            align-items: center;
+            background: coral;
+        }
+
+        .right .sales-analytics .item:nth-child(3) .icon {
+            background: var(--clr-success);
+        }
+
+        .right .sales-analytics .item:nth-child(4) .icon {
+            background: var(--clr-danger);
+        }
+
+        .right .sales-analytics .item .right {
+            margin-left: 15px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .right .sales-analytics .item .right h3 {
+            color: var(d);
+        }
+
+
+        .add_product div {
+            display: flex;
+            height: 60px;
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed;
+            color: var(--clr-dark-variant);
+            margin-bottom: 40px;
+
+        }
+
+
+
+
+        /* **********8
+MEDIA QUERY
+****************/
+
+        @media screen and (max-width:1200px) {
+            .container {
+                width: 94%;
+                grid-template-columns: 7rem auto 14rem;
+            }
+
+            aside .sidebar h3 {
+                display: none;
+            }
+
+            aside .sidebar a {
+                width: 5.6rem;
+            }
+
+            aside .sidebar a:last-child {
+                position: relative;
+                margin-top: 1.8rem;
+            }
+
+            main .insights {
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+
+        /* ****************
+MEDIA QUERY PHONE
+************************/
+
+        @media screen and (max-width:768px) {
+            .container {
+                width: 100%;
+                grid-template-columns: repeat(1, 1fr);
+
+            }
+
+            aside {
+                position: fixed;
+                width: 18rem;
+                z-index: 3;
+                height: 100vh;
+                background-color: var(--clr-white);
+                display: none;
+                left: -110px;
+                animation: menuLeft .3s ease forwards;
+            }
+
+            @keyframes menuLeft {
+                to {
+                    left: 0;
+                }
+            }
+
+
+
+
+            aside .logo h2 {
+                display: inline;
+            }
+
+            aside .sidebar h3 {
+                display: inline;
+            }
+
+            aside .sidebar a {
+                width: 100%;
+                height: 3.4rem;
+            }
+
+            aside .top div.close span {
+                display: inline;
+                position: absolute;
+                right: 0;
+                margin-right: 30px;
+                font-size: 35px;
+                cursor: pointer;
+            }
+
+            .right .top {
+                position: fixed;
+                top: 0;
+                left: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0 0.8rem;
+                background: var(--clr-white);
+                height: 4.6rem;
+                width: 100%;
+                z-index: 2;
+                box-shadow: 0 1rem 1rem var(--clr-light);
+                margin: 0;
+            }
+
+
+            main .insights {
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+                gap: 1.6rem;
+                padding: 40px;
+            }
+
+            main .recent_order {
+                padding: 30px;
+                margin: 0 auto;
+            }
+
+
+
+            .right .profile {
+                position: absolute;
+                left: 70%;
+            }
+
+            .right .top .theme-toggler {
+                width: 4.4rem;
+                position: absolute;
+                left: 50%;
+            }
+
+            .right .profile .info {
+                display: none;
+            }
+
+            .right .top button {
+                display: inline-block;
+                background: transparent;
+                cursor: pointer;
+                color: var(--clr-dark);
+                position: absolute;
+                left: 1rem;
+
+            }
+
+            .right .recent_order {
+                padding: 0 30px;
+            }
+
+            .right .recent_updates {
+                padding: 0 40px;
+            }
+
+            .right .sales-analytics {
+                padding: 0 40px;
+            }
+
+            .right .add_product {
+                padding: 0 40px;
+                margin-bottom: 40px;
+            }
+
+
+        }
+
+        .container-xyz {
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 64rem;
+        }
+
+        .header-xyz {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .header-xyz h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .header-xyz select {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+        }
+
+        .chart-xyz {
+            display: none;
+        }
+
+        .chart-xyz.active-xyz {
+            display: block;
+        }
+
+        .table-xyz {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-xyz th,
+        .table-xyz td {
+            text-align: left;
+            padding: 0.5rem;
+        }
+
+        .table-xyz th {
+            color: #6b7280;
+        }
+
+        .bar-xyz {
+            position: relative;
+            height: 10rem;
+            width: 2rem;
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
+
+        .bar-xyz::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #bfdbfe;
+            border-radius: 0.375rem 0.375rem 0 0;
+        }
+
+        .bar-50-xyz::after {
+            height: 50%;
+        }
+
+        .bar-33-xyz::after {
+            height: 33%;
+        }
+
+        .bar-66-xyz::after {
+            height: 66%;
+        }
+
+        .bar-75-xyz::after {
+            height: 75%;
+        }
+
+        .bar-80-xyz::after {
+            height: 80%;
+        }
+
+        .bar-60-xyz::after {
+            height: 60%;
+        }
+
+        .bar-40-xyz::after {
+            height: 40%;
+        }
+
+        .bar-25-xyz::after {
+            height: 25%;
+        }
+
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f6f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 97%;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: justify;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-container input,
+        .form-container select,
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-container button {
+            background-color: #7380ec;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-container button:hover {
+            background-color: #5a67d8;
+        }
+
+        .summary {
+            /* display: flex;
+            justify-content: space-around; */
+            margin-bottom: 20px;
+            padding: 20px;
+            /* flex-direction: column; */
+            /* gap: 20px; */
+        }
+
+        .summary div {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 12px 13px 9px rgb(33 24 24 / 15%);
+            width: -webkit-fill-available;
+            text-align: center;
+            transition: transform 0.3s;
+            margin: 30px 10px;
+        }
+
+        .summary div:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .summary p {
+            font-size: 24px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: max-content;
+            margin: 3rem 0rem;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            background-color: azure;
+        }
+
+        th {
+            cursor: pointer;
+            background-color: #7f9dff;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: space-around;
+            max-width: 39rem;
+            flex-wrap: wrap;
+            margin-left: 5rem;
+        }
+
+        .chart-container canvas {
+            width: 45%;
+        }
+
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+        }
+
+        .front-ed {
+            /* display: flex; */
+            gap: 35px;
+            /* background: aquamarine; */
+            height: 500px;
+            padding: 20px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <aside>
+            <div class="top">
+                <div class="logo">
+                    <h2>MS K. <span class="danger">Hajeera</span> </h2>
+                </div>
+                <div class="close" id="close_btn">
+                    <span class="material-symbols-sharp">
+                        close
+                    </span>
+                </div>
+            </div>
+            <!-- end top -->
+            <div class="sidebar">
+                <a href="index.html">
+                    <span class="material-symbols-sharp">grid_view </span>
+                    <h3>Dashbord</h3>
+                </a>
+                <a href="income3.html" class="active">
+                    <span class="material-symbols-sharp">person_outline </span>
+                    <h3>custumers Sales</h3>
+                </a>
+                <a href="charts.html">
+                    <span class="material-symbols-sharp">insights </span>
+                    <h3>Analytics</h3>
+                </a>
+                <a href="message.html">
+                    <span class="material-symbols-sharp">mail_outline </span>
+                    <h3>Messages</h3>
+                    <span class="msg_count">4</span>
+                </a>
+                <a href="Product.html">
+                    <span class="material-symbols-sharp">receipt_long </span>
+                    <h3>Products</h3>
+                </a>
+                <a href="reports.html">
+                    <span class="material-symbols-sharp">report_gmailerrorred </span>
+                    <h3>Reports</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">settings </span>
+                    <h3>settings</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">add </span>
+                    <h3>Add Product</h3>
+                </a>
+                <a href="login.html">
+                    <span class="material-symbols-sharp">logout </span>
+                    <h3>logout</h3>
+                </a>
+            </div>
+        </aside>
+        <div class="main">
+            <div class="front-ed">
+                <h1>Income/Expense Tracker</h1>
+                <div class="form-container">
+                    <h2>Add New Transaction</h2>
+                    <form id="transactionForm">
+                        <input type="date" id="date" required>
+                        <input type="text" id="description" placeholder="Description" required>
+                        <select id="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Income">Income</option>
+                            <option value="Expense">Expense</option>
+                        </select>
+                        <input type="number" id="amount" placeholder="Amount" required>
+                        <button type="submit">Add Transaction</button>
+                    </form>
+                </div>
+            </div>
+            <table id="transactionTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Date</th>
+                        <th onclick="sortTable(1)">Description</th>
+                        <th onclick="sortTable(2)">Category</th>
+                        <th onclick="sortTable(3)">Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+
+            <div class="summary">
+                <div>
+                    <h3>Total Income</h3>
+                    <p id="totalIncome">0</p>
+                </div>
+                <div>
+                    <h3>Total Expenses</h3>
+                    <p id="totalExpenses">0</p>
+                </div>
+                <div>
+                    <h3>Net Balance</h3>
+                    <p id="netBalance">0</p>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="monthlyChart"></canvas>
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+        <div class="right">
+
+            <div class="top">
+                <button id="menu_bar">
+                    <span class="material-symbols-sharp">menu</span>
+                </button>
+
+                <!-- <div class="theme-toggler">
+                    <span class="material-symbols-sharp active">light_mode</span>
+                    <span class="material-symbols-sharp">dark_mode</span>
+                </div> -->
+                <div class="profile">
+                    <div class="info">
+                        <p><b>Ms Hajeera</b></p>
+                        <p>Admin</p>
+                        <small class="text-muted"></small>
+                    </div>
+                    <div class="profile-photo">
+                        <img src="./profileImg.jpg" alt="" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent_updates">
+                <h2>Recent Update</h2>
+                <div class="updates">
+                    <div class="update">
+                        <div class="profile-photo">
+                            <img src="./profile-4.jpg" alt="" />
+                        </div>
+                        <div class="message">
+                            <p><b>Babar</b> Recived his order of USB</p>
+                        </div>
+                    </div>
+                    <div class="update">
+                        <div class="profile-photo">
+                            <img src="./profile-3.jpg" alt="" />
+                        </div>
+                        <div class="message">
+                            <p><b>Ali</b> Recived his order of USB</p>
+                        </div>
+                    </div>
+                    <div class="update">
+                        <div class="profile-photo">
+                            <img src="./profile-2.jpg" alt="" />
+                        </div>
+                        <div class="message">
+                            <p><b>Ramzan</b> Recived his order of USB</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="sales-analytics">
+                <h2>Sales Analytics</h2>
+
+                <div class="item onlion">
+                    <div class="icon">
+                        <span class="material-symbols-sharp">shopping_cart</span>
+                    </div>
+                    <div class="right_text">
+                        <div class="info">
+                            <h3>Onlion Orders</h3>
+                            <small class="text-muted">Last seen 2 Hours</small>
+                        </div>
+                        <h5 class="danger">-17%</h5>
+                        <h3>3849</h3>
+                    </div>
+                </div>
+                <div class="item onlion">
+                    <div class="icon">
+                        <span class="material-symbols-sharp">shopping_cart</span>
+                    </div>
+                    <div class="right_text">
+                        <div class="info">
+                            <h3>Onlion Orders</h3>
+                            <small class="text-muted">Last seen 2 Hours</small>
+                        </div>
+                        <h5 class="success">-17%</h5>
+                        <h3>3849</h3>
+                    </div>
+                </div>
+                <div class="item onlion">
+                    <div class="icon">
+                        <span class="material-symbols-sharp">shopping_cart</span>
+                    </div>
+                    <div class="right_text">
+                        <div class="info">
+                            <h3>Onlion Orders</h3>
+                            <small class="text-muted">Last seen 2 Hours</small>
+                        </div>
+                        <h5 class="danger">-17%</h5>
+                        <h3>3849</h3>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+            <div class="item add_product">
+                <div>
+                    <span class="material-symbols-sharp">add</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script>
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+        document.getElementById('transactionForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const date = document.getElementById('date').value;
+            const description = document.getElementById('description').value;
+            const category = document.getElementById('category').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            const transaction = { date, description, category, amount };
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            renderTransactions();
+            updateSummary();
+            updateCharts();
+        });
+
+        function renderTransactions() {
+            const tbody = document.getElementById('transactionTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
+            transactions.forEach((transaction, index) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).innerText = transaction.date;
+                row.insertCell(1).innerText = transaction.description;
+                row.insertCell(2).innerText = transaction.category;
+                row.insertCell(3).innerText = transaction.amount;
+                const deleteCell = row.insertCell(4);
+                deleteCell.innerHTML = '<i class="fas fa-trash delete-btn" onclick="deleteTransaction(' + index + ')"></i>';
+            });
+        }
+
+        function deleteTransaction(index) {
+            transactions.splice(index, 1);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            renderTransactions();
+            updateSummary();
+            updateCharts();
+        }
+
+        function updateSummary() {
+            const totalIncome = transactions.filter(t => t.category === 'Income').reduce((acc, t) => acc + t.amount, 0);
+            const totalExpenses = transactions.filter(t => t.category === 'Expense').reduce((acc, t) => acc + t.amount, 0);
+            const netBalance = totalIncome + totalExpenses;
+
+            document.getElementById('totalIncome').innerText = totalIncome.toFixed(2);
+            document.getElementById('totalExpenses').innerText = totalExpenses.toFixed(2);
+            document.getElementById('netBalance').innerText = netBalance.toFixed(2);
+        }
+
+        function updateCharts() {
+            const monthlyData = transactions.reduce((acc, t) => {
+                const month = t.date.slice(0, 7);
+                if (!acc[month]) acc[month] = 0;
+                acc[month] += t.amount;
+                return acc;
+            }, {});
+
+            const categoryData = transactions.reduce((acc, t) => {
+                if (!acc[t.category]) acc[t.category] = 0;
+                acc[t.category] += t.amount;
+                return acc;
+            }, {});
+
+            const monthlyChartCtx = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(monthlyChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(monthlyData),
+                    datasets: [{
+                        label: 'Monthly Breakdown',
+                        data: Object.values(monthlyData),
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            const categoryChartCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryChartCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(categoryData),
+                    datasets: [{
+                        label: 'Category Analysis',
+                        data: Object.values(categoryData),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                }
+            });
+        }
+
+        function sortTable(n) {
+            const table = document.getElementById('transactionTable');
+            let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            switching = true;
+            dir = "asc";
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTransactions();
+            updateSummary();
+            updateCharts();
+        });
+    </script>
+</body>
+
+</html>
