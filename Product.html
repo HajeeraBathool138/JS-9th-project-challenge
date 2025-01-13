@@ -9,6 +9,8 @@
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     <link rel="icon" href="hand.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+
     <style>
         :root {
             --clr-primary: #7380ec;
@@ -815,9 +817,9 @@ MEDIA QUERY PHONE
                     <input type="date" id="timeframe" required>
                     <button type="submit">Set Goal</button>
                 </form>
-                <div class="goal-progress" id="goalProgress">
-                    <!-- Goal progress will be dynamically inserted here -->
-                </div>
+                <!-- <div class="goal-progress" id="goalProgress">
+                   //  Goal progress will be dynamically inserted here 
+                </div> -->
             </div>
             <div class="product-grid" id="productGrid">
                 <!-- Product cards will be dynamically inserted here -->
@@ -1099,6 +1101,88 @@ MEDIA QUERY PHONE
         document.addEventListener('DOMContentLoaded', () => {
             renderProducts();
         });
+
+        // Retrieve and initialize data from localStorage
+        const goalsKey = 'goals';
+        const savedGoals = JSON.parse(localStorage.getItem(goalsKey)) || [];
+
+        // Function to render goals in the DOM
+        function renderGoals() {
+            const productGrid = document.getElementById('productGrid');
+            productGrid.innerHTML = '';
+            savedGoals.forEach((goal, index) => {
+                const goalCard = document.createElement('div');
+                goalCard.className = 'product-card';
+                goalCard.innerHTML = `
+                <h3 contenteditable="true" onblur="editGoal(${index}, 'name', this.innerText.trim())">${goal.name}</h3>
+                <p>Target: ₹<span contenteditable="true" onblur="editGoal(${index}, 'targetAmount', this.innerText.trim())">${goal.targetAmount}</span></p>
+                <p>Deadline: <span contenteditable="true" onblur="editGoal(${index}, 'timeframe', this.innerText.trim())">${goal.timeframe}</span></p>
+                <i class="fas fa-trash delete-btn" onclick="removeGoal(${index})"></i>
+            `;
+                productGrid.appendChild(goalCard);
+            });
+        }
+
+        // Function to save goals to localStorage
+        function saveGoalsToLocalStorage() {
+            localStorage.setItem(goalsKey, JSON.stringify(savedGoals));
+        }
+
+        // Function to remove a goal
+        function removeGoal(index) {
+            savedGoals.splice(index, 1); // Remove from array
+            saveGoalsToLocalStorage(); // Update localStorage
+            renderGoals(); // Refresh DOM
+        }
+
+        // Function to edit a goal
+        function editGoal(index, field, value) {
+            if (field === 'targetAmount') {
+                // Validate numeric value
+                value = parseFloat(value);
+                if (isNaN(value)) {
+                    alert("Please enter a valid number for the target amount.");
+                    renderGoals(); // Re-render to reset invalid input
+                    return;
+                }
+            }
+
+            // Update the specific field in the goal
+            savedGoals[index][field] = value;
+
+            // Save updated goals to localStorage and re-render
+            saveGoalsToLocalStorage();
+            renderGoals();
+        }
+
+        // Handle Goal Form Submission
+        document.getElementById('goalForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = document.getElementById('goalName').value.trim();
+            const targetAmount = parseFloat(document.getElementById('targetAmount').value);
+            const timeframe = document.getElementById('timeframe').value.trim();
+
+            // Validate form inputs
+            if (!name || isNaN(targetAmount) || !timeframe) {
+                alert("Please fill out all fields correctly.");
+                return;
+            }
+
+            // Add new goal to the array
+            const newGoal = { name, targetAmount, timeframe };
+            savedGoals.push(newGoal);
+
+            // Save to localStorage and update the DOM
+            saveGoalsToLocalStorage();
+            renderGoals();
+
+            // Clear form inputs
+            document.getElementById('goalForm').reset();
+        });
+
+        // Initial Render on Page Load
+        document.addEventListener('DOMContentLoaded', renderGoals);
+
     </script>
 </body>
 

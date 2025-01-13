@@ -1052,7 +1052,7 @@ MEDIA QUERY PHONE
         function updateSummary() {
             const totalIncome = transactions.filter(t => t.category === 'Income').reduce((acc, t) => acc + t.amount, 0);
             const totalExpenses = transactions.filter(t => t.category === 'Expense').reduce((acc, t) => acc + t.amount, 0);
-            const netBalance = totalIncome + totalExpenses;
+            const netBalance = totalIncome - totalExpenses;
 
             document.getElementById('totalIncome').innerText = totalIncome.toFixed(2);
             document.getElementById('totalExpenses').innerText = totalExpenses.toFixed(2);
