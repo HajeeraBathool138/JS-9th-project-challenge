@@ -8,6 +8,7 @@
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     <link rel="icon" href="hand.png">
+    <script src="validation.js"></script>
     <style>
         body {
             width: 100vw;
@@ -1090,6 +1091,31 @@ MEDIA QUERY PHONE
             themeToggler.querySelector('span:nth-child(1').classList.toggle('active')
             themeToggler.querySelector('span:nth-child(2').classList.toggle('active')
         })
+
+        // Retrieve username from local storage
+        const storedFirstName = localStorage.getItem('firstname');
+
+        // Update left corner (Sidebar Logo)
+        const sidebarLogo = document.querySelector('aside .logo h2');
+        if (sidebarLogo && storedFirstName) {
+            sidebarLogo.innerHTML = ` <span class="danger">${storedFirstName}</span>`;
+        }
+
+        // Update right corner (Profile Info)
+        const profileInfo = document.querySelector('.right .profile .info p b');
+        const profileRole = document.querySelector('.right .profile .info p:nth-child(2)');
+        if (profileInfo && storedFirstName) {
+            profileInfo.textContent = storedFirstName;
+            // Update role based on the logged-in user
+            if (storedFirstName.toLowerCase() === 'hajeera') {
+                profileRole.textContent = 'Admin';
+            } else {
+                profileRole.textContent = 'User';
+            }
+        }
+
+        // Ensure local storage debug information is logged
+        console.log("Username loaded into dashboard:", storedFirstName);
     </script>
 </body>
 

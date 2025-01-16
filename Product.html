@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     <link rel="icon" href="hand.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-
+    <script src="validation.js"></script>
     <style>
         :root {
             --clr-primary: #7380ec;
@@ -793,14 +793,7 @@ MEDIA QUERY PHONE
                     <span class="material-symbols-sharp">report_gmailerrorred </span>
                     <h3>Reports</h3>
                 </a>
-                <!-- <a href="#">
-                    <span class="material-symbols-sharp">settings </span>
-                    <h3>settings</h3>
-                </a>
-                <a href="#">
-                    <span class="material-symbols-sharp">add </span>
-                    <h3>Add Product</h3>
-                </a> -->
+
                 <a href="login.html">
                     <span class="material-symbols-sharp">logout </span>
                     <h3>logout</h3>
@@ -943,11 +936,13 @@ MEDIA QUERY PHONE
     <script>
         // Product Class
         class Product {
-            constructor(name, stock, sales, category) {
+            constructor(name, stock, sales, category, dueDate) {
                 this.name = name;
                 this.stock = stock;
                 this.sales = sales;
                 this.category = category;
+                this.dueDate = dueDate; // Added property
+                this.username = ''; // Added username property
                 this.history = [];
             }
 
@@ -964,19 +959,32 @@ MEDIA QUERY PHONE
         // Inventory Class
         class Inventory {
             constructor() {
-                this.products = [];
+                this.products = JSON.parse(localStorage.getItem('products')) || [];
             }
 
             addProduct(product) {
                 this.products.push(product);
+                this.saveToLocalStorage();
             }
 
-            getLowStockProducts(threshold) {
-                return this.products.filter(product => product.stock < threshold);
+            // getLowStockProducts(threshold) {
+            //     return this.products.filter(product => product.stock < threshold);
+            // }
+
+            // filterByCategory(category) {
+            //     return this.products.filter(product => product.category === category);
+            // }
+
+            saveToLocalStorage() {
+                localStorage.setItem('products', JSON.stringify(this.products));
+            }
+            getProducts() {
+                return this.products;
             }
 
-            filterByCategory(category) {
-                return this.products.filter(product => product.category === category);
+            deleteProduct(index) {
+                this.products.splice(index, 1);
+                this.saveToLocalStorage();
             }
         }
 
@@ -1007,30 +1015,112 @@ MEDIA QUERY PHONE
 
         // Initialize Inventory
         const inventory = new Inventory();
+        // // Add some products with dueDate
+        // inventory.addProduct(new Product('Laptop', 10, 5, 'Electronics', '2025-01-30'));
+        // inventory.addProduct(new Product('Shirt', 20, 15, 'Clothing', '2025-02-15'));
+        // inventory.addProduct(new Product('Phone', 5, 10, 'Electronics', '2025-01-25'));
+        // inventory.addProduct(new Product('Pants', 8, 12, 'Clothing', '2025-03-01'));
 
-        // Add some products
-        inventory.addProduct(new Product('Laptop', 10, 5, 'Electronics'));
-        inventory.addProduct(new Product('Shirt', 20, 15, 'Clothing'));
-        inventory.addProduct(new Product('Phone', 5, 10, 'Electronics'));
-        inventory.addProduct(new Product('Pants', 8, 12, 'Clothing'));
+
+        // // Add some products
+        // inventory.addProduct(new Product('Laptop', 10, 5, 'Electronics'));
+        // inventory.addProduct(new Product('Shirt', 20, 15, 'Clothing'));
+        // inventory.addProduct(new Product('Phone', 5, 10, 'Electronics'));
+        // inventory.addProduct(new Product('Pants', 8, 12, 'Clothing'));
 
         // Render Products
         function renderProducts() {
             const productGrid = document.getElementById('productGrid');
+            if (!productGrid) {
+                console.error("Product grid container not found!");
+                return;
+            }
+            const username = localStorage.getItem('firstname') || 'Guest'; // Retrieve username from localStorage
             productGrid.innerHTML = '';
             inventory.products.forEach((product, index) => {
+                const today = new Date();
+                const dueDate = new Date(product.dueDate);
+                const isPastDate = dueDate < today;
+
                 const productCard = document.createElement('div');
-                productCard.className = `product-card ${product.stock < 5 ? 'low-stock' : ''}`;
+                // productCard.className = `product-card ${product.stock < 5 ? 'low-stock' : ''}`;
+                productCard.className = `product-card ${isPastDate ? 'past-due' : ''}`;
                 productCard.innerHTML = `
                     <h3>${product.name}</h3>
                     <p>Stock: <span contenteditable="true" onblur="updateProductStock(${index}, this)">${product.stock}</span></p>
                     <p>Sales: ${product.sales}</p>
                     <p>Category: <span contenteditable="true" onblur="updateProductCategory(${index}, this)">${product.category}</span></p>
-                    <i class="fas fa-edit edit-btn"></i>
+                    <p>Due Date: ${product.dueDate}</p>
+                    <p>Added By: ${username}</p> 
+                     <button class="buy-btn" onclick="handleBuy(${index})">Buy</button>
+            ${(product.username === username || username === 'Hajeera') ? `
+                <button class="delete-btn" onclick="deleteProduct(${index})">Delete</button>` : ''}
                 `;
+                if (isPastDate) {
+                    productCard.style.border = '2px solid red';
+                }
+
                 productGrid.appendChild(productCard);
             });
         }
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(); // Ensure products are rendered after DOM is loaded
+        });
+
+
+        // Handle "Buy" Button Click
+        function handleBuy(index) {
+            const product = inventory.products[index];
+            const today = new Date();
+            const dueDate = new Date(product.dueDate);
+
+            if (dueDate < today) {
+                showDialog("You can't buy this product because it has already ended the due date.");
+            } else {
+                // Redirect to Gmail compose page with email pre-filled
+                const storedEmail = localStorage.getItem('email');
+                if (!storedEmail || storedEmail.trim() === '') {
+                    alert("No email ID found in local storage. Please log in with a valid email.");
+                    return;
+                }
+                // Construct the Gmail compose URL
+                const mailtoLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(storedEmail)}&su=${encodeURIComponent(`Inquiry about ${product.name}`)}`;
+                window.open(mailtoLink, '_blank');
+            }
+        }
+        console.log(localStorage.getItem('email')); // Should print the stored email
+
+
+        // Show Dialog for Past Dates
+        function showDialog(message) {
+            const dialog = document.createElement('div');
+            dialog.style.position = 'fixed';
+            dialog.style.top = '50%';
+            dialog.style.left = '50%';
+            dialog.style.transform = 'translate(-50%, -50%)';
+            dialog.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            dialog.style.color = 'white';
+            dialog.style.padding = '20px';
+            dialog.style.borderRadius = '10px';
+            dialog.style.textAlign = 'center';
+            dialog.style.zIndex = '1000';
+
+            dialog.innerHTML = `
+        <p>${message}</p>
+        <button onclick="closeDialog(this)">Close</button>
+    `;
+
+            document.body.appendChild(dialog);
+            document.body.style.filter = 'blur(5px)';
+        }
+
+        // Close Dialog
+        function closeDialog(button) {
+            const dialog = button.parentNode;
+            document.body.removeChild(dialog);
+            document.body.style.filter = '';
+        }
+
 
         // Update Product Stock
         function updateProductStock(index, element) {
@@ -1042,6 +1132,19 @@ MEDIA QUERY PHONE
                 alert('Invalid stock value');
             }
         }
+        function deleteProduct(index) {
+            const product = inventory.products[index];
+            const username = localStorage.getItem('firstname') || 'Guest';
+
+            if (product.username === username || username === 'Hajeera') {
+                inventory.products.splice(index, 1); // Remove product
+                inventory.saveToLocalStorage(); // Save updated products
+                renderProducts();
+            } else {
+                alert("You can only delete your own products.");
+            }
+        }
+
 
         // Update Product Category
         function updateProductCategory(index, element) {
@@ -1056,15 +1159,51 @@ MEDIA QUERY PHONE
         // Handle Goal Form Submission
         document.getElementById('goalForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            const name = document.getElementById('goalName').value;
-            const targetAmount = parseFloat(document.getElementById('targetAmount').value);
-            const timeframe = document.getElementById('timeframe').value;
+            // const name = document.getElementById('goalName').value;
+            // const targetAmount = parseFloat(document.getElementById('targetAmount').value);
+            // const timeframe = document.getElementById('timeframe').value;
 
-            const goal = new SavingsGoal(name, targetAmount, timeframe);
-            savingsGoals.push(goal);
+            // const goal = new SavingsGoal(name, targetAmount, timeframe);
+            // savingsGoals.push(goal);
 
-            await goal.updateProgress(0); // Initialize progress
-            renderGoals();
+            // await goal.updateProgress(0); // Initialize progress
+            // renderGoals();
+            const name = document.getElementById('goalName').value.trim();
+            const stock = parseInt(document.getElementById('targetAmount').value);
+            // const timeframe = document.getElementById('timeframe').value.trim();
+            const dueDate = document.getElementById('timeframe').value.trim();
+            const username = localStorage.getItem('firstname') || 'Guest';
+
+            // if (!name || isNaN(stock) || !timeframe) {
+            //     alert("Please fill out all fields correctly.");
+            //     // return;
+            // }
+
+            const today = new Date();
+            const enteredDate = new Date(dueDate);
+
+            if (enteredDate < today) {
+                alert("You cannot set a past date. Please select today or a future date.");
+                return;
+            }
+
+            const product = new Product(name, stock, 0, "General", dueDate, username);
+            product.username = username;
+            inventory.addProduct(product);
+            renderProducts();
+
+            // Clear form inputs
+            document.getElementById('goalForm').reset();
+        });
+
+        // Load Products on Page Load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inventory.products = JSON.parse(localStorage.getItem('products')) || [];
+            renderProducts();
         });
 
         // Render Goals
@@ -1182,6 +1321,37 @@ MEDIA QUERY PHONE
 
         // Initial Render on Page Load
         document.addEventListener('DOMContentLoaded', renderGoals);
+
+        // Retrieve username from local storage
+        const storedFirstName = localStorage.getItem('firstname');
+
+        // Update left corner (Sidebar Logo)
+        const sidebarLogo = document.querySelector('aside .logo h2');
+        if (sidebarLogo && storedFirstName) {
+            sidebarLogo.innerHTML = ` <span class="danger">${storedFirstName}</span>`;
+        }
+
+        // Update right corner (Profile Info)
+        const profileInfo = document.querySelector('.right .profile .info p b');
+        const profileRole = document.querySelector('.right .profile .info p:nth-child(2)');
+        if (profileInfo && storedFirstName) {
+            profileInfo.textContent = storedFirstName;
+            // Update role based on the logged-in user
+            if (storedFirstName.toLowerCase() === 'hajeera') {
+                profileRole.textContent = 'Admin';
+            } else {
+                profileRole.textContent = 'User';
+            }
+        }
+
+        // Ensure local storage debug information is logged
+        console.log("Username loaded into dashboard:", storedFirstName);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(); // Ensure products are rendered after DOM is loaded
+        });
+
+        console.log(document.getElementById('productGrid')); // Ensure container is found
 
     </script>
 </body>
